@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ task5 ]
+  pull_request:
+    branches: [ task5 ]
+  workflow_dispatch:
+  
+env:
+  GOOGLE_TEST_DIR: googletest-release-1.11.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download gtest lib
+        run: |
+          echo "Start downloading"
+          mkdir task5/3rdparty/
+          wget https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
+          tar -xf release-1.11.0.tar.gz -C task5/3rdparty/
+          rm release-1.11.0.tar.gz
+          echo "Start completed!"
+          
+      - name: Build step
+        run: |
+          echo "Building started."
+          # mkdir task5/.build && cd/task5
+          cmake -S . -B  /.build
+          cd /.build
+          cmake --build . --config Release
+          echo "Building completed!"
+          
+      - name: Test step
+        uses: akhtyamovpavel/ActionGtestReport@v0.0.9
+        with:
+          exec-path: task5/bin/CTestExe
+          report-path: test-report
+          working-directory: .
+          
+      - name: UploadArtifacts step
+        uses: actions/upload-artifact@v2
+        with:
+          name: Distributive
+          path: |
+            task5/bin
+            task5/lib
