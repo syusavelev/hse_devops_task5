@@ -29,9 +29,8 @@ jobs:
       - name: Build step
         run: |
           echo "Building started."
-          mkdir task5/.build && cd task5
-          cmake -S . -B  /.build
-          cd /.build
+          mkdir task5/.build && cd task5/.build
+          cmake ..
           cmake --build . --config Release
           echo "Building completed!"
           
